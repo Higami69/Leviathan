@@ -9,11 +9,26 @@
 bool FileGenerator::DoJSExtensionGeneration(
     string input, string output, const std::string& name)
 {
-
     // There should be no '"' characters //
 
     // Create folders
-    boost::filesystem::create_directories(boost::filesystem::path(output).parent_path());
+    try {
+        boost::filesystem::create_directories(boost::filesystem::path(output).parent_path());
+
+        // If the output exists we set it to be writeable again
+        if(boost::filesystem::exists(output)) {
+
+            // Set file to writeable. Deleting a read only file doesn't seem to work on windows
+            {
+                using namespace boost::filesystem;
+                permissions(output, add_perms | owner_write | others_write | group_write);
+            }
+        }
+
+    } catch(const boost::filesystem::filesystem_error& e) {
+        std::cout << "Error occurred while making sure output target is fine: " << e.what()
+                  << std::endl;
+    }
 
     // Write stuff over the file //
     ofstream writer(output);
@@ -100,7 +115,7 @@ bool FileGenerator::DoJSExtensionGeneration(
     // Set file to read-only after we're done with it
     {
         using namespace boost::filesystem;
-        permissions(path(output), remove_perms | owner_write | others_write | group_write);
+        permissions(output, remove_perms | owner_write | others_write | group_write);
     }
 
     cout << "Done generating file: " << output << endl;
