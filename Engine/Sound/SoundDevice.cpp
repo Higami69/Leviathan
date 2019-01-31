@@ -18,10 +18,7 @@ using namespace Leviathan::Sound;
 // ------------------------------------ //
 
 SoundDevice::SoundDevice() {}
-SoundDevice::~SoundDevice()
-{
-    Release();
-}
+SoundDevice::~SoundDevice() {}
 // ------------------------------------ //
 bool SoundDevice::Init(bool simulatesound /*= false*/, bool noconsolelog /*= false*/)
 {
